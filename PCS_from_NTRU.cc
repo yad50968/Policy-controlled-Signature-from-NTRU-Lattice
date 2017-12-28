@@ -45,6 +45,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <complex.h>
 #include <gmp.h>
 #include <math.h>
+#include <memory>
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
@@ -68,14 +69,14 @@ using namespace NTL;
 
 int main() {
 
+    unique_ptr<MSK_Data> MSKD( new MSK_Data );
+    unique_ptr<MSK_Data> SSKD( new MSK_Data );
+    unique_ptr<MPK_Data> MPKD( new MPK_Data );
+    unique_ptr<MPK_Data> SPKD( new MPK_Data );
+
     ZZX MSK[4], SSK[4];
     ZZ_pX phiq, MPK, SPK;
     unsigned int i;
-    MSK_Data* MSKD = new MSK_Data;
-    MPK_Data* MPKD = new MPK_Data;
-
-    MSK_Data* SSKD = new MSK_Data;
-    MPK_Data* SPKD = new MPK_Data;
 
     const ZZX phi = Cyclo();
 
@@ -122,5 +123,6 @@ int main() {
     Verify(policy, policy_SK, message, SPKD, signature, message_p_hash, C_i,
            R_i, policy_key_pos);
 
+    unique_ptr<int> a( new int(0) );
     return 0;
 }

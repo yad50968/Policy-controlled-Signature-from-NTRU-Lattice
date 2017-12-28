@@ -132,7 +132,7 @@ void CompletePrivateKey(mat_ZZ& B, const ZZX* const PrivateKey) {
 }
 
 void GPV(RR_t* v, const RR_t* const c, const RR_t s,
-         const MSK_Data* const MSKD) {
+         unique_ptr<MSK_Data> &MSKD) {
 
     int i;
     unsigned j;
@@ -167,7 +167,7 @@ void GPV(RR_t* v, const RR_t* const c, const RR_t s,
 //==============================================================================
 //==============================================================================
 
-void CompleteMSK(MSK_Data* MSKD, ZZX* MSK) {
+void CompleteMSK(unique_ptr<MSK_Data> &MSKD, ZZX* MSK) {
     unsigned int i, j;
     mat_ZZ B0;
 
@@ -195,12 +195,12 @@ void CompleteMSK(MSK_Data* MSKD, ZZX* MSK) {
     MSKD->sigma = 2 * MSKD->GS_Norms[0];
 }
 
-void CompleteMPK(MPK_Data* MPKD, ZZ_pX MPK) {
+void CompleteMPK(unique_ptr<MPK_Data> &MPKD, ZZ_pX MPK) {
     MPKD->h = MPK;
     ZZXToFFT(MPKD->h_FFT, conv<ZZX>(MPK));
 }
 
-void IBE_Extract(ZZX SK_id[2], vec_ZZ id, const MSK_Data* const MSKD) {
+void IBE_Extract(ZZX SK_id[2], vec_ZZ id, unique_ptr<MSK_Data> &MSKD) {
     unsigned int i;
     RR_t c[2 * N0], sk[2 * N0], sigma;
     ZZX f, g, aux;
@@ -229,33 +229,9 @@ void IBE_Extract(ZZX SK_id[2], vec_ZZ id, const MSK_Data* const MSKD) {
     }
 }
 
-unsigned long IBE_Verify_Key(const ZZX SK_id[2], const vec_ZZ id,
-                             const MSK_Data* const MSKD) {
-
-    unsigned int i;
-    ZZX f, g, t, aux;
-
-    f = MSKD->PrK[0];
-    g = MSKD->PrK[1];
-
-    t = conv<ZZX>(id);
-    aux = ((SK_id[0] - t) * f + g * SK_id[1]) % phi;
-
-    for (i = 0; i < N0; i++) {
-        aux[i] %= q1;
-    }
-
-    if (IsZero(aux) != 0) {
-        cout << "The signature (s1,s2) doesn't verify the required equality [ "
-                "(s1 - t)*f + g*s2 = 0 ] !\nActually, (s1 - t)*f + g*s2 = "
-             << aux << endl
-             << endl;
-    }
-    return IsZero(aux);
-}
 
 void IBE_Encrypt(long C[2][N0], const long m[N0], const long id0[N0],
-                 const MPK_Data* const MPKD) {
+                 unique_ptr<MPK_Data> &MPKD) {
 
     unsigned long i;
     long r[N0], e1[N0], e2[N0];
@@ -305,13 +281,13 @@ void IBE_Decrypt(long message[N0], const long C[2][N0],
     }
 }
 
-void CreGen(std::string policy, ZZX SK_policy[2], const MSK_Data* const MSKD) {
+void CreGen(std::string policy, ZZX SK_policy[2], unique_ptr<MSK_Data> &MSKD) {
     vec_ZZ policy_id = StringToVecZZ(policy);
     IBE_Extract(SK_policy, policy_id, MSKD);
 }
 
 void Signature(std::vector<std::string> policy, std::string message,
-               const MPK_Data* const MPKD, const MSK_Data* const SSKD,
+               unique_ptr<MPK_Data> &MPKD, unique_ptr<MSK_Data> &SSKD,
                ZZX* signature, std::string& message_p_hash,
                long int C_i[][2][N0], std::vector<std::string>& R_i) {
 
@@ -344,7 +320,7 @@ void Signature(std::vector<std::string> policy, std::string message,
 }
 
 void Verify(std::vector<std::string> policy, ZZX policy_SK[2],
-            std::string message, const MPK_Data* const SPKD, ZZX* signature,
+            std::string message, unique_ptr<MPK_Data> &SPKD, ZZX* signature,
             std::string& message_p_hash, long int C_i[][2][N0],
             std::vector<std::string> R_i, int policy_key_pos) {
 
