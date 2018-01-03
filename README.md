@@ -1,7 +1,7 @@
 Policy-controlled Signature From NTRU Lattice
 ===========
 
-This software is a proof-of-concept implementation of policy-controlled signature scheme over NTRU lattices, described in the paper "Policy-controlled Signature from NTRU Lattice", of Zi-Yuan Liu, Jen-Chieh Hsu, Raylin Tso
+This software is a proof-of-concept implementation of policy-controlled signature scheme over NTRU lattices, described in the paper "Policy-controlled Signature from NTRU Lattice", of Zi-Yuan Liu, Jen-Chieh Hsu, Raylin Tso, Tzong-Chen Wu
 
 Warning
 =======
